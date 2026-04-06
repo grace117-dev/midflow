@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -7,13 +6,12 @@
     <title>榮格心理學 - 靈魂圖卡生成器</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 html2canvas 用於生成圖片 -->
+    <!-- 引入 html2canvas (轉圖片核心) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- 引入復古優雅的 Serif 字體 -->
+    <!-- 引入復古優雅字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Noto+Serif+TC:wght@400;600;900&display=swap" rel="stylesheet">
     
     <script>
-        // 設定 Tailwind 自定義顏色 (榮格美學配色)
         tailwind.config = {
             theme: {
                 extend: {
@@ -32,174 +30,173 @@
         }
     </script>
     <style>
-        /* 強制卡片保持 3:4 小紅書黃金比例 */
         #card-preview {
             width: 375px;
             height: 500px;
-            /* 加入微弱的雜訊紋理，增加擬物實體感 */
             background-image: radial-gradient(#D5CFC1 1px, transparent 1px);
             background-size: 20px 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        /* 隱藏滾動條使介面更乾淨 */
+        /* 隱藏滾動條 */
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-darkBg text-gray-200 min-h-screen font-serif p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
-        <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-end">
+        <header class="mb-8 border-b border-gray-700 pb-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-jungGold">Archetype Generator</h1>
-                <p class="text-sm text-gray-400 mt-2">榮格深層心理圖卡工具 - 小紅書專用版</p>
+                <h1 class="text-3xl font-bold text-jungGold tracking-tighter">Archetype Studio</h1>
+                <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">C.G. Jung Content Generator</p>
             </div>
-            <!-- 新增：隨機生成按鈕放在右上角 -->
-            <button onclick="generateRandomJung()" class="bg-gray-800 hover:bg-gray-700 text-jungGold border border-jungGold px-4 py-2 rounded text-sm transition duration-200 flex items-center gap-2">
-                🔮 隨機注入榮格思維
+            <button onclick="generateRandomJung()" class="w-full md:w-auto bg-transparent hover:bg-jungGold hover:text-darkBg text-jungGold border border-jungGold px-6 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2">
+                🔮 隨機注入榮格靈感
             </button>
         </header>
 
-        <div class="flex flex-col md:flex-row gap-8 items-start">
+        <div class="flex flex-col lg:flex-row gap-12 items-start">
             
-            <!-- 左側：輸入控制面板 (Terminal 風格) -->
-            <div class="w-full md:w-1/2 bg-gray-900 p-6 rounded-lg border border-gray-700">
-                <h2 class="text-xl text-jungGold mb-6 border-b border-gray-700 pb-2">內容編輯區</h2>
+            <!-- 左側：編輯面板 -->
+            <div class="w-full lg:w-5/12 bg-gray-900/50 p-6 rounded-2xl border border-gray-800 backdrop-blur-sm">
+                <h2 class="text-lg text-gray-400 mb-6 font-light">Content Editor</h2>
                 
-                <div class="space-y-5">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">主標題 (Title)</label>
-                        <input type="text" id="input-title" value="陰影覺察練習" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
+                        <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">標題</label>
+                        <input type="text" id="input-title" value="陰影覺察練習" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-jungGold transition-colors" oninput="updateCard()">
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">引言/副標 (Subtitle)</label>
-                        <textarea id="input-quote" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">「向外看的人，做著夢；向內看的人，醒著。」—— C.G. Jung</textarea>
+                        <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">榮格語錄</label>
+                        <textarea id="input-quote" rows="3" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-jungGold transition-colors text-sm" oninput="updateCard()">「向外看的人，做著夢；向內看的人，醒著。」</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">覺察點 01</label>
+                            <input type="text" id="input-pt1" value="承認抗拒：寫下今天最讓你煩躁的事。" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">覺察點 02</label>
+                            <input type="text" id="input-pt2" value="投射收回：這反映了你不願面對的自己嗎？" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">解析點 1 (Point 1)</label>
-                        <input type="text" id="input-pt1" value="承認抗拒：寫下今天最讓你煩躁的一句話。" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
+                        <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">署名 / ID</label>
+                        <input type="text" id="input-author" value="@榮格心理學筆記" class="w-full bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
                     </div>
 
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">解析點 2 (Point 2)</label>
-                        <input type="text" id="input-pt2" value="投射收回：這份煩躁，是否反映了你不願面對的自己？" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-1">博主 ID (Footer)</label>
-                        <input type="text" id="input-author" value="@你的小紅書ID" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-jungGold" oninput="updateCard()">
-                    </div>
-
-                    <button onclick="downloadImage()" class="w-full bg-jungGold hover:bg-yellow-600 text-gray-900 font-bold py-3 rounded transition duration-200 mt-4 flex justify-center items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        生成並下載卡片
+                    <button onclick="downloadImage()" class="w-full bg-jungGold text-darkBg font-bold py-4 rounded-lg hover:brightness-110 transition-all mt-6 shadow-lg shadow-jungGold/20">
+                        儲存為高品質圖片 (PNG)
                     </button>
                 </div>
             </div>
 
-            <!-- 右側：即時預覽區 (小紅書卡片 3:4) -->
-            <div class="w-full md:w-1/2 flex justify-center items-center p-4">
-                <div id="card-preview" class="bg-cardPaper relative flex flex-col p-8 overflow-hidden">
+            <!-- 右側：即時預覽 (3:4 卡片) -->
+            <div class="w-full lg:w-7/12 flex flex-col items-center">
+                <div id="card-preview" class="bg-cardPaper relative flex flex-col p-10 overflow-hidden text-jungText">
                     
-                    <!-- 頂部裝飾線與標題 -->
-                    <div class="text-center mt-4">
-                        <div class="w-12 h-[2px] bg-jungGold mx-auto mb-4"></div>
-                        <h2 id="card-title" class="text-3xl font-black text-jungGreen tracking-widest">陰影覺察練習</h2>
-                        <p id="card-quote" class="text-sm text-jungText mt-3 italic leading-relaxed px-4">「向外看的人，做著夢；向內看的人，醒著。」—— C.G. Jung</p>
+                    <!-- 裝飾元素 -->
+                    <div class="absolute top-0 left-0 w-full h-1 bg-jungGold"></div>
+                    
+                    <div class="text-center mb-8">
+                        <div id="card-tag" class="text-[10px] tracking-[0.3em] text-jungGold uppercase mb-2">Shadow Work</div>
+                        <h2 id="card-title" class="text-3xl font-black text-jungGreen tracking-tight mb-4">陰影覺察練習</h2>
+                        <div class="w-8 h-[1px] bg-gray-300 mx-auto"></div>
                     </div>
 
-                    <!-- 中間圖示與列表 -->
-                    <div class="flex-grow flex flex-col justify-center space-y-6 mt-4">
-                        
-                        <!-- 列表項目 1 -->
-                        <div class="flex items-start gap-3">
-                            <div class="text-jungGold flex-shrink-0 mt-1">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                            </div>
-                            <p id="card-pt1" class="text-jungText text-base font-semibold leading-relaxed">承認抗拒：寫下今天最讓你煩躁的一句話。</p>
+                    <div class="flex-grow flex flex-col justify-center">
+                        <div class="relative">
+                            <span class="absolute -top-6 -left-4 text-6xl text-gray-200 font-serif opacity-50">“</span>
+                            <p id="card-quote" class="text-lg font-medium leading-relaxed italic px-4 relative z-10">「向外看的人，做著夢；向內看的人，醒著。」</p>
                         </div>
 
-                        <!-- 列表項目 2 -->
-                        <div class="flex items-start gap-3">
-                            <div class="text-jungGold flex-shrink-0 mt-1">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <div class="mt-12 space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-5 h-5 rounded-full border border-jungGold flex items-center justify-center flex-shrink-0 mt-1">
+                                    <div class="w-1 h-1 bg-jungGold rounded-full"></div>
+                                </div>
+                                <p id="card-pt1" class="text-sm font-semibold leading-snug">承認抗拒：寫下今天最讓你煩躁的一件事。</p>
                             </div>
-                            <p id="card-pt2" class="text-jungText text-base font-semibold leading-relaxed">投射收回：這份煩躁，是否反映了你不願面對的自己？</p>
+                            <div class="flex items-start gap-4">
+                                <div class="w-5 h-5 rounded-full border border-jungGold flex items-center justify-center flex-shrink-0 mt-1">
+                                    <div class="w-1 h-1 bg-jungGold rounded-full"></div>
+                                </div>
+                                <p id="card-pt2" class="text-sm font-semibold leading-snug">投射收回：這是否反映了你不願面對的自己？</p>
+                            </div>
                         </div>
-
                     </div>
 
-                    <!-- 底部 Footer -->
-                    <div class="mt-auto border-t border-gray-300 pt-4 flex justify-between items-end">
-                        <span id="card-author" class="text-xs text-jungGreen font-bold tracking-wider">@你的小紅書ID</span>
-                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Psyche & Shadow</span>
+                    <div class="mt-auto pt-8 border-t border-gray-200 flex justify-between items-end">
+                        <div>
+                            <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Created by</p>
+                            <p id="card-author" class="text-xs font-bold tracking-wider text-jungGreen">@榮格心理學筆記</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-jungGold font-bold tracking-tighter">C.G. JUNG</p>
+                        </div>
                     </div>
                 </div>
+                <p class="mt-6 text-gray-500 text-sm">↑ 此為 3:4 小紅書黃金比例預覽</p>
             </div>
-
         </div>
     </div>
 
-    <!-- JavaScript 邏輯 -->
     <script>
-        // 榮格心理學資料庫
-        // 1. 語錄庫 (你可以無限增加)
-const quotes = [
-    "「與其做一個好人，我寧願做一個完整的人。」",
-    "「向外看的人，做著夢；向內看的人，醒著。」",
-    "「每個人都有一個陰影，它越是隱藏在意識生活中，就越黑、越密。」",
-    "「我不是發生在我身上的事，我是我選擇成為的人。」",
-    "「直到你讓潛意識意識化，它都會引導你的生活，而你會稱之為命運。」",
-    "「孤獨並不是來自身邊無人，而是因為無法與他人交流最要緊的感受。」"
-];
+        // 1. 語錄庫 (名言)
+        const quotes = [
+            "「與其做一個好人，我寧願做一個完整的人。」",
+            "「向外看的人，做著夢；向內看的人，醒著。」",
+            "「直到你讓潛意識意識化，它都將引導你的生活，而你稱之為命運。」",
+            "「每個人都有一個陰影，它越是隱藏在意識生活中，就越黑、越密。」",
+            "「我不是發生在我身上的事，我是我選擇成為的人。」",
+            "「孤獨並不是來自身邊無人，而是無法溝通內心最要緊的感受。」",
+            "「特權是一輩子成為你自己。」",
+            "「思考是困難的，這就是為什麼大多數人選擇審判。」"
+        ];
 
-// 2. 練習題庫 (這部分是成對出現的：[點1, 點2])
-const exercises = [
-    ["承認抗拒：寫下今天最讓你煩躁的一件事。", "投射收回：這是否反映了你不願面對的自己？"],
-    ["社會角色：你在他人面前最常扮演的形象是什麼？", "真實渴望：如果沒人評價你，你現在想做什麼？"],
-    ["接受碎片：找出你過去曾極度討厭自己的一個特質。", "整合力量：這個特質曾經在什麼時候保護過你？"],
-    ["核心價值：剝除工作與財富，剩下什麼能定義你的存在？", "內在對話：不帶批判地陪伴那個焦慮的自己。"]
-];
+        // 2. 練習庫 (成對的覺察點)
+        const exercises = [
+            {
+                tag: "Shadow Work",
+                title: "陰影覺察練習",
+                points: ["承認抗拒：寫下今天最讓你煩躁的一件事。", "投射收回：這是否反映了你不願面對的自己？"]
+            },
+            {
+                tag: "Persona",
+                title: "人格面具剝離",
+                points: ["社會角色：你在他人面前最常扮演的完美形象是什麼？", "真實渴望：如果沒人評價你，你現在最想做什麼？"]
+            },
+            {
+                tag: "Individuation",
+                title: "個體化之路",
+                points: ["接受碎片：找出你過去曾極度討厭自己的一個特質。", "整合力量：這個特質曾在什麼時候保護過你？"]
+            },
+            {
+                tag: "Self-Reflection",
+                title: "內在對話",
+                points: ["核心價值：剝除工作與財富，剩下什麼能定義你的存在？", "靈魂補償：這份焦慮，是否在提醒你忽略了某個面向？"]
+            }
+        ];
 
-// 3. 隨機組合生成邏輯 (取代舊的 generateRandomJung)
-function generateRandomJung() {
-    // 隨機抽一句語錄
-    const q = quotes[Math.floor(Math.random() * quotes.length)];
-    // 隨機抽一組練習
-    const ex = exercises[Math.floor(Math.random() * exercises.length)];
-    
-    // 把抽到的東西塞進左邊的輸入框
-    document.getElementById('input-quote').value = q;
-    document.getElementById('input-pt1').value = ex[0];
-    document.getElementById('input-pt2').value = ex[1];
-    
-    // 更新標題 (如果你想要隨機標題也可以改這裡)
-    document.getElementById('input-title').value = "靈魂深度覺察";
+        // 隨機組合生成邏輯
+        function generateRandomJung() {
+            const q = quotes[Math.floor(Math.random() * quotes.length)];
+            const ex = exercises[Math.floor(Math.random() * exercises.length)];
+            
+            document.getElementById('input-title').value = ex.title;
+            document.getElementById('input-quote').value = q;
+            document.getElementById('input-pt1').value = ex.points[0];
+            document.getElementById('input-pt2').value = ex.points[1];
+            
+            // 更新標籤
+            document.getElementById('card-tag').innerText = ex.tag;
 
-    // 更新右邊的預覽卡片
-    updateCard();
-}
-
-            // 寫入輸入框
-            document.getElementById('input-title').value = data.title;
-            document.getElementById('input-quote').value = data.quote;
-            document.getElementById('input-pt1').value = data.pt1;
-            document.getElementById('input-pt2').value = data.pt2;
-
-            // 加上一點按鈕點擊的反饋動畫效果
-            const btn = document.querySelector('button[onclick="generateRandomJung()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "✨ 靈感注入中...";
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-            }, 500);
-
-            // 更新預覽卡片
             updateCard();
         }
 
-        // 實時更新卡片內容
+        // 實時同步預覽
         function updateCard() {
             document.getElementById('card-title').innerText = document.getElementById('input-title').value;
             document.getElementById('card-quote').innerText = document.getElementById('input-quote').value;
@@ -208,19 +205,23 @@ function generateRandomJung() {
             document.getElementById('card-author').innerText = document.getElementById('input-author').value;
         }
 
-        // 下載圖片核心邏輯
+        // 下載圖片
         function downloadImage() {
+            const btn = event.target;
+            btn.innerText = "正在生成高畫質圖檔...";
+            
             const card = document.getElementById('card-preview');
             html2canvas(card, {
-                scale: 3, 
+                scale: 4, // 超高解析度
                 useCORS: true,
                 backgroundColor: "#F3EFE6"
             }).then(canvas => {
                 const image = canvas.toDataURL("image/png", 1.0);
                 const link = document.createElement('a');
-                link.download = `jung-card-${new Date().getTime()}.png`;
+                link.download = `Jung-Post-${new Date().getTime()}.png`;
                 link.href = image;
                 link.click();
+                btn.innerText = "儲存為高品質圖片 (PNG)";
             });
         }
     </script>
