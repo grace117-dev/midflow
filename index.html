@@ -17,11 +17,11 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#121312',     // 深色工作區背景
-                        cardPaper: '#F3EFE6',  // 仿羊皮紙底色
-                        jungGreen: '#2C3E35',  // 復古墨綠
-                        jungGold: '#B89B5E',   // 煉金術暗金
-                        jungText: '#1A1A1A'    // 深灰文字，比純黑更有質感
+                        darkBg: '#121312',     
+                        cardPaper: '#F3EFE6',  
+                        jungGreen: '#2C3E35',  
+                        jungGold: '#B89B5E',   
+                        jungText: '#1A1A1A'    
                     },
                     fontFamily: {
                         serif: ['"Playfair Display"', '"Noto Serif TC"', 'serif'],
@@ -47,9 +47,15 @@
 <body class="bg-darkBg text-gray-200 min-h-screen font-serif p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
-        <header class="mb-8 border-b border-gray-700 pb-4">
-            <h1 class="text-3xl font-bold text-jungGold">Archetype Generator</h1>
-            <p class="text-sm text-gray-400 mt-2">榮格深層心理圖卡工具 - 小紅書專用版</p>
+        <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-jungGold">Archetype Generator</h1>
+                <p class="text-sm text-gray-400 mt-2">榮格深層心理圖卡工具 - 小紅書專用版</p>
+            </div>
+            <!-- 新增：隨機生成按鈕放在右上角 -->
+            <button onclick="generateRandomJung()" class="bg-gray-800 hover:bg-gray-700 text-jungGold border border-jungGold px-4 py-2 rounded text-sm transition duration-200 flex items-center gap-2">
+                🔮 隨機注入榮格思維
+            </button>
         </header>
 
         <div class="flex flex-col md:flex-row gap-8 items-start">
@@ -93,7 +99,6 @@
 
             <!-- 右側：即時預覽區 (小紅書卡片 3:4) -->
             <div class="w-full md:w-1/2 flex justify-center items-center p-4">
-                <!-- 這個 div 就是會被轉換成圖片的區域 -->
                 <div id="card-preview" class="bg-cardPaper relative flex flex-col p-8 overflow-hidden">
                     
                     <!-- 頂部裝飾線與標題 -->
@@ -108,7 +113,6 @@
                         
                         <!-- 列表項目 1 -->
                         <div class="flex items-start gap-3">
-                            <!-- 神秘學圖示 (這裡用 SVG 代表月亮/陰影) -->
                             <div class="text-jungGold flex-shrink-0 mt-1">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                             </div>
@@ -117,7 +121,6 @@
 
                         <!-- 列表項目 2 -->
                         <div class="flex items-start gap-3">
-                            <!-- 神秘學圖示 (這裡用 SVG 代表太陽/意識) -->
                             <div class="text-jungGold flex-shrink-0 mt-1">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                             </div>
@@ -139,6 +142,64 @@
 
     <!-- JavaScript 邏輯 -->
     <script>
+        // 榮格心理學資料庫
+        const jungDatabase = [
+            {
+                title: "陰影覺察練習",
+                quote: "「向外看的人，做著夢；向內看的人，醒著。」—— C.G. Jung",
+                pt1: "承認抗拒：寫下今天最讓你煩躁的一句話或一件事。",
+                pt2: "投射收回：這份煩躁，是否反映了你不願面對的自己？"
+            },
+            {
+                title: "卸下面具",
+                quote: "「每個人都有一個陰影，它越是隱藏在意識生活中，就越黑、越密。」",
+                pt1: "社會角色：你在他人面前最常扮演的「完美形象」是什麼？",
+                pt2: "真實渴望：如果今天沒有人會評價你，你此刻最想做什麼？"
+            },
+            {
+                title: "個體化之旅",
+                quote: "「我不是發生在我身上的事，我是我選擇成為的人。」—— C.G. Jung",
+                pt1: "接受碎片：找出你過去曾極度討厭自己的一個特質。",
+                pt2: "整合力量：回想一下，這個特質曾經在什麼時候保護過你？"
+            },
+            {
+                title: "遇見潛意識",
+                quote: "「直到你讓潛意識意識化，它都會引導你的生活，而你會稱之為命運。」",
+                pt1: "情感盲區：回顧過往，你最容易被哪種特質的人激怒或吸引？",
+                pt2: "靈魂補償：這正是你內在匱乏，亟待發展與正視的面向。"
+            },
+            {
+                title: "曼陀羅核心",
+                quote: "「孤獨並不是來自身邊無人，而是因為無法與他人交流最要緊的感受。」",
+                pt1: "核心價值：剝除工作與財富，剩下什麼能定義你的存在？",
+                pt2: "內在對話：今晚花五分鐘，不帶批判地陪伴那個焦慮的自己。"
+            }
+        ];
+
+        // 隨機生成功能
+        function generateRandomJung() {
+            // 隨機挑選一組資料
+            const randomIndex = Math.floor(Math.random() * jungDatabase.length);
+            const data = jungDatabase[randomIndex];
+
+            // 寫入輸入框
+            document.getElementById('input-title').value = data.title;
+            document.getElementById('input-quote').value = data.quote;
+            document.getElementById('input-pt1').value = data.pt1;
+            document.getElementById('input-pt2').value = data.pt2;
+
+            // 加上一點按鈕點擊的反饋動畫效果
+            const btn = document.querySelector('button[onclick="generateRandomJung()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "✨ 靈感注入中...";
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 500);
+
+            // 更新預覽卡片
+            updateCard();
+        }
+
         // 實時更新卡片內容
         function updateCard() {
             document.getElementById('card-title').innerText = document.getElementById('input-title').value;
@@ -151,15 +212,12 @@
         // 下載圖片核心邏輯
         function downloadImage() {
             const card = document.getElementById('card-preview');
-            // 使用 html2canvas 捕捉 DOM 元素並轉成 Canvas
             html2canvas(card, {
-                scale: 3, // 提高解析度 (3倍) 讓小紅書上傳不模糊
+                scale: 3, 
                 useCORS: true,
                 backgroundColor: "#F3EFE6"
             }).then(canvas => {
-                // 將 Canvas 轉成圖片 URL
                 const image = canvas.toDataURL("image/png", 1.0);
-                // 建立一個隱藏的 a 標籤來觸發下載
                 const link = document.createElement('a');
                 link.download = `jung-card-${new Date().getTime()}.png`;
                 link.href = image;
