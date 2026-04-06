@@ -1,49 +1,42 @@
 <!-- 這裡只替換 <script> 中的資料庫部分與生成邏輯，其他 HTML 結構維持不變 -->
 <script>
     // 擴充後的榮格大數據庫 (你可以自行不斷往裡面加)
-    const jungDatabase = [
-        {
-            cat: "陰影工作 (Shadow)",
-            title: "直視內在陰影",
-            quote: "「與其做一個好人，我寧願做一個完整的人。」",
-            pt1: "覺察行為：找出今天你最想隱藏、不願被他人看見的一個情緒。",
-            pt2: "力量轉化：這個情緒在保護你什麼？試著與它握手言和。"
-        },
-        {
-            cat: "個體化 (Individuation)",
-            title: "成為你自己",
-            quote: "「每個人生命中最重要的任務，就是讓潛意識意識化。」",
-            pt1: "脫離集體：回想一下，你現在的目標有多少是為了符合大眾期待？",
-            pt2: "內在召喚：如果拋開所有標籤，你靈魂深處真正渴望的挑戰是什麼？"
-        },
-        {
-            cat: "阿尼瑪/阿尼姆斯 (Soul)",
-            title: "內在陰性/陽性力量",
-            quote: "「每個人心中都隱藏著另一個性別的靈魂原型。」",
-            pt1: "情感投射：你在伴侶身上追求的完美特質，是否正是你缺失的內在部分？",
-            pt2: "平衡練習：今天嘗試用一種與平時完全不同的溫柔(或堅毅)方式溝通。"
-        },
-        {
-            cat: "共時性 (Synchronicity)",
-            title: "宇宙的巧合",
-            quote: "「有時候，外在世界的事件會精準地對應到內在的心靈狀態。」",
-            pt1: "徵兆捕捉：今天是否有遇到什麼讓你覺得『太巧了』的瞬間？",
-            pt2: "心理意義：那個巧合在試圖提醒你什麼？不要只當它是隨機事件。"
-        },
-        {
-            cat: "煉金術 (Alchemy)",
-            title: "心靈的轉化",
-            quote: "「不經歷黑暗的人，永遠無法抵達光明。」",
-            pt1: "煉金過程：將你目前的痛苦視為『鉛』，想像如何將它煉成『金』。",
-            pt2: "沉澱思考：這份痛苦帶來的成長，是否已經在悄悄改變你的本質？"
-        }
-        // ... 你可以繼續增加到 100 條，GitHub Pages 跑起來依舊飛快
-    ];
+    // 1. 語錄庫 (你可以無限增加)
+const quotes = [
+    "「與其做一個好人，我寧願做一個完整的人。」",
+    "「向外看的人，做著夢；向內看的人，醒著。」",
+    "「每個人都有一個陰影，它越是隱藏在意識生活中，就越黑、越密。」",
+    "「我不是發生在我身上的事，我是我選擇成為的人。」",
+    "「直到你讓潛意識意識化，它都會引導你的生活，而你會稱之為命運。」",
+    "「孤獨並不是來自身邊無人，而是因為無法與他人交流最要緊的感受。」"
+];
 
-    function generateRandomJung() {
-        const randomIndex = Math.floor(Math.random() * jungDatabase.length);
-        const data = jungDatabase[randomIndex];
+// 2. 練習題庫 (這部分是成對出現的：[點1, 點2])
+const exercises = [
+    ["承認抗拒：寫下今天最讓你煩躁的一件事。", "投射收回：這是否反映了你不願面對的自己？"],
+    ["社會角色：你在他人面前最常扮演的形象是什麼？", "真實渴望：如果沒人評價你，你現在想做什麼？"],
+    ["接受碎片：找出你過去曾極度討厭自己的一個特質。", "整合力量：這個特質曾經在什麼時候保護過你？"],
+    ["核心價值：剝除工作與財富，剩下什麼能定義你的存在？", "內在對話：不帶批判地陪伴那個焦慮的自己。"]
+];
 
+// 3. 隨機組合生成邏輯 (取代舊的 generateRandomJung)
+function generateRandomJung() {
+    // 隨機抽一句語錄
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    // 隨機抽一組練習
+    const ex = exercises[Math.floor(Math.random() * exercises.length)];
+    
+    // 把抽到的東西塞進左邊的輸入框
+    document.getElementById('input-quote').value = q;
+    document.getElementById('input-pt1').value = ex[0];
+    document.getElementById('input-pt2').value = ex[1];
+    
+    // 更新標題 (如果你想要隨機標題也可以改這裡)
+    document.getElementById('input-title').value = "靈魂深度覺察";
+
+    // 更新右邊的預覽卡片
+    updateCard();
+}
         // 更新輸入框
         document.getElementById('input-title').value = data.title;
         document.getElementById('input-quote').value = data.quote;
